@@ -75,6 +75,19 @@ app.post('/addVolunteerPost', async (req, res) => {
 });
 
 
+//get a single data from db using an ID for volunteerJobDetails component
+app.get('/volunteerPosts/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await volunteerPosts.findOne(query);
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching job:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 
 
