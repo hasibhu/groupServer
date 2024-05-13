@@ -4,6 +4,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
+
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -43,8 +44,8 @@ const dbConnect = async () => {
 dbConnect();
 
 
-const volunteerPosts = client.db('assignment11').collection('posts');
-const volunteerRequests = client.db('assignment11').collection('requests');
+const volunteerPosts = client.db('assignment11').collection('volunteerPosts');
+const volunteerRequests = client.db('assignment11').collection('volunteerRequests');
 
 
 
@@ -61,6 +62,17 @@ app.get('/volunteerPosts', async (req, res) => {
 });
 
 
+// add volunteer post from AddVolunteer component 
+app.post('/addVolunteerPost', async (req, res) => {
+    try {
+        const postData = req.body;
+        const result = await volunteerPosts.insertOne(postData);
+        res.json(result);
+    } catch (error) {
+        console.error("Error saving post:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 
 
