@@ -90,6 +90,19 @@ app.get('/volunteerPosts/:id', async (req, res) => {
 
 
 
+// save job application data in db from applyforposition component
+
+app.post('/applications', async (req, res) => {
+    try {
+        const applicationData = req.body;
+        const result = await volunteerRequests.insertOne(applicationData);
+        res.json(result);
+    } catch (error) {
+        console.error("Error saving bid:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 
 
