@@ -112,7 +112,7 @@ app.post('/applications', async (req, res) => {
 });
 
 
-//Get all bids data from database related to user email for MyApplication component
+//Get all application data from database related to user email for MyApplication component
 app.get('/volunteerRequests/:email', async (req, res) => {
     try {
         const email = req.params.email;
@@ -138,6 +138,25 @@ app.get('/joinRequest/:email', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+
+
+
+//Get all post data from database related to user email for ManageMyPosts component
+app.get('/myPosts/:email', async (req, res) => {
+    try {
+        const email = req.params.email;
+        const query = {organizer_email: email };
+        const result = await volunteerRequests.find(query).toArray();
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+
 
 
 
