@@ -61,6 +61,16 @@ app.get('/volunteerPosts', async (req, res) => {
     }
 });
 
+app.get('/volunteerRequests', async (req, res) => {
+    try {
+        const result = await volunteerRequests.find().toArray();
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 // add volunteer post from AddVolunteer component 
 app.post('/addVolunteerPost', async (req, res) => {
@@ -89,9 +99,7 @@ app.get('/volunteerPosts/:id', async (req, res) => {
 });
 
 
-
 // save job application data in db from applyforposition component
-
 app.post('/applications', async (req, res) => {
     try {
         const applicationData = req.body;
@@ -102,6 +110,41 @@ app.post('/applications', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+
+//Get all bids data from database related to user email for MyApplication component
+app.get('/volunteerRequests/:email', async (req, res) => {
+    try {
+        const email = req.params.email;
+        const query = { volunteerEmail: email };
+        const result = await volunteerRequests.find(query).toArray();
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+// get data for join request for JoinRequest component
+app.get('/joinRequest/:email', async (req, res) => {
+    try {
+        const email = req.params.email;
+        const query = { organizer_email: email };
+        const result = await volunteerRequests.find(query).toArray();
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+
+
+
+
+
 
 
 
