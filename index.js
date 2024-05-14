@@ -176,7 +176,28 @@ app.get('/myPost/:id', async (req, res) => {
 
 
 
+app.put('/update/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const postData = req.body; // Use jobData instead of updatedData
+        const query = { _id: new ObjectId(id) };
+        const options = { upsert: true }; // any new data will be posted by this 
+        const updateDoc = {
+            $set: { ...postData }, // Use jobData instead of updatedData
+        };
 
+        const result = await posts.updateOne(query, updateDoc, options);
+        // Check if the update was successful
+        if (result.modifiedCount === 1) {
+            res.status(200).json({ message: "Job updated successfully" });
+        } else {
+            res.status(404).json({ error: "Job not found" });
+        }
+    } catch (error) {
+        console.error("Error updating job:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 
 
