@@ -44,8 +44,8 @@ const dbConnect = async () => {
 dbConnect();
 
 
-const volunteerPosts = client.db('assignment11').collection('volunteerPosts');
-const volunteerRequests = client.db('assignment11').collection('volunteerRequests');
+const posts = client.db('assignment11').collection('volunteerPosts');
+const requests = client.db('assignment11').collection('volunteerRequests');
 
 
 
@@ -53,7 +53,7 @@ const volunteerRequests = client.db('assignment11').collection('volunteerRequest
 
 app.get('/volunteerPosts', async (req, res) => {
     try {
-        const result = await volunteerPosts.find().toArray();
+        const result = await posts.find().toArray();
         res.json(result);
     } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -63,7 +63,7 @@ app.get('/volunteerPosts', async (req, res) => {
 
 app.get('/volunteerRequests', async (req, res) => {
     try {
-        const result = await volunteerRequests.find().toArray();
+        const result = await posts.find().toArray();
         res.json(result);
     } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -76,7 +76,7 @@ app.get('/volunteerRequests', async (req, res) => {
 app.post('/addVolunteerPost', async (req, res) => {
     try {
         const postData = req.body;
-        const result = await volunteerPosts.insertOne(postData);
+        const result = await posts.insertOne(postData);
         res.json(result);
     } catch (error) {
         console.error("Error saving post:", error);
@@ -90,7 +90,8 @@ app.get('/volunteerPosts/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
-        const result = await volunteerPosts.findOne(query);
+        const result = await posts.findOne(query);
+        
         res.json(result);
     } catch (error) {
         console.error("Error fetching job:", error);
@@ -103,7 +104,7 @@ app.get('/volunteerPosts/:id', async (req, res) => {
 app.post('/applications', async (req, res) => {
     try {
         const applicationData = req.body;
-        const result = await volunteerRequests.insertOne(applicationData);
+        const result = await requests.insertOne(applicationData);
         res.json(result);
     } catch (error) {
         console.error("Error saving bid:", error);
@@ -117,7 +118,7 @@ app.get('/volunteerRequests/:email', async (req, res) => {
     try {
         const email = req.params.email;
         const query = { volunteerEmail: email };
-        const result = await volunteerRequests.find(query).toArray();
+        const result = await requests.find(query).toArray();
         res.json(result);
     } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -131,7 +132,7 @@ app.get('/joinRequest/:email', async (req, res) => {
     try {
         const email = req.params.email;
         const query = { organizer_email: email };
-        const result = await volunteerRequests.find(query).toArray();
+        const result = await requests.find(query).toArray();
         res.json(result);
     } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -147,7 +148,7 @@ app.get('/myPosts/:email', async (req, res) => {
     try {
         const email = req.params.email;
         const query = {organizer_email: email };
-        const result = await volunteerRequests.find(query).toArray();
+        const result = await posts.find(query).toArray();
         res.json(result);
     } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -156,9 +157,21 @@ app.get('/myPosts/:email', async (req, res) => {
 });
 
 
+// get data for update component 
+app.get('/myPost/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log("Received ID:", id);
+        const query = { _id: new ObjectId(id) };
+        console.log("Query:", query);
+        const result = await posts.findOne(query);
 
-
-
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching job:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 
 
