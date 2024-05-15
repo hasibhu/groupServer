@@ -72,6 +72,18 @@ app.get('/volunteerRequests', async (req, res) => {
 });
 
 
+//Get all posts data from database
+
+app.get('/volunteerPostsBySort', async (req, res) => {
+    try {
+        const result = await posts.find().sort({deadline: 1}).toArray();
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 // add volunteer post from AddVolunteer component 
 app.post('/addVolunteerPost', async (req, res) => {
     try {
