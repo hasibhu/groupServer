@@ -11,7 +11,7 @@ const app = express();
 // milestone11ConceptualSession
 // vKFzx1LQydEhC2Zk
 const corsOptions = {
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'https://assisnment11web.web.app'],
     credentials: true,
     optionSuccessStatus: 200,
 };
@@ -19,27 +19,6 @@ const corsOptions = {
 //middleware
 app.use(cors(corsOptions));
 app.use(express.json()); // explanation >> milstn11Conep-part3- 45mins
-app.use(cookieParser());
-
-// verify jwt middleware 
-const verifyToken = (req, res, next) => {
-    const token = req.cookies?.token;
-
-    if (!token) return res.status(401).send({ message: 'Unauthorised Access' });
-
-    if (token) {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-            if (err) {
-                console.log(err);
-                return res.status(401).send({ message: 'Unauthorised Access' });
-
-            };
-            // console.log(decoded);
-            req.user = decoded;
-            next();
-        });
-    }
-}
 
 
 const uri = `mongodb+srv://${process.env.Db_User}:${process.env.Db_Password}@cluster0.qoryues.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -159,14 +138,9 @@ app.post('/applications', async (req, res) => {
 
 
 //Get all application data from database related to user email for MyApplication component
-app.get('/volunteerRequests/:email', verifyToken, async (req, res) => {
+app.get('/volunteerRequests/:email', async (req, res) => {
     try {
-        const tokenEmail = req.user?.email;
         const email = req.params.email;
-        if (tokenEmail !== email) {
-            return res.status(403).send({ message: 'Forbidden Access' });
-        }
-        // const email = req.params.email;
         const query = { volunteerEmail: email };
         const result = await requests.find(query).toArray();
         res.json(result);
@@ -178,14 +152,9 @@ app.get('/volunteerRequests/:email', verifyToken, async (req, res) => {
 
 
 // get data for join request for JoinRequest component
-app.get('/joinRequest/:email', verifyToken, async (req, res) => {
+app.get('/joinRequest/:email', async (req, res) => {
     try {
-        const tokenEmail = req.user?.email;
         const email = req.params.email;
-        if (tokenEmail !== email) {
-            return res.status(403).send({ message: 'Forbidden Access' });
-        }
-        // const email = req.params.email;
         const query = { organizer_email: email };
         const result = await requests.find(query).toArray();
         res.json(result);
@@ -196,45 +165,13 @@ app.get('/joinRequest/:email', verifyToken, async (req, res) => {
 });
 
 
+
+
 //Get all post data from database related to user email for ManageMyPosts component
-// app.get('/myPosts/:email', verifyToken, async (req, res) => {
-//     try {
-//         // const token = req.cookies?.token;
-//         // if (token) {
-//         //     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-//         //         if (err) {
-//         //             console.log(err);
-//         //         };
-//         //         // console.log(decoded);
-//         //     });
-//         // }
-//         const tokenEmail = req.user?.email;
-//         const email = req.params.email;
-//         if (tokenEmail !== email) {
-//             return res.status(403).send({ message: 'Forbidden Access' });
-//         }
-//         const query = { organizer_email: email };
-//         const result = await posts.find(query).toArray();
-//         res.json(result);
-//         return; // Add this line to end the request-response cycle
-//     } catch (error) {
-//         console.error("Error fetching jobs:", error);
-//         res.status(500).json({ error: "Internal server error" });
-//         return; // Add this line to end the request-response cycle
-//     }
-// });
-
-app.get('/myPosts/:email', verifyToken, async (req, res) => {
+app.get('/myPosts/:email', async (req, res) => {
     try {
-        const tokenEmail = req.user?.email;
-        const emailParam = req.params.email;
-
-        // Ensure the token email and the email parameter match
-        if (tokenEmail !== emailParam) {
-            return res.status(403).send({ message: 'Forbidden Access' });
-        }
-
-        const query = { organizer_email: tokenEmail };
+        const email = req.params.email;
+        const query = {organizer_email: email };
         const result = await posts.find(query).toArray();
         res.json(result);
     } catch (error) {
@@ -245,10 +182,10 @@ app.get('/myPosts/:email', verifyToken, async (req, res) => {
 
 
 // get data for update component 
-app.get('/myPost/:id',  async (req, res) => {
+app.get('/myPost/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        console.log("Received ID:", id);
+      
         const query = { _id: new ObjectId(id) };
         console.log("Query:", query);
         const result = await posts.findOne(query);
@@ -259,6 +196,8 @@ app.get('/myPost/:id',  async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+
 
 //  update post in updatePost component
 app.put('/update/:id', async (req, res) => {
