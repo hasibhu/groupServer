@@ -3,7 +3,7 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-
+const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -11,13 +11,13 @@ const app = express();
 // milestone11ConceptualSession
 // vKFzx1LQydEhC2Zk
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: ['http://localhost:5173'],
     credentials: true,
     optionSuccessStatus: 200,
 };
 
 //middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json()); // explanation >> milstn11Conep-part3- 45mins
 
 
@@ -74,7 +74,6 @@ app.get('/volunteerRequests', async (req, res) => {
 
 
 //Get all posts data from database in ascending order
-
 app.get('/volunteerPostsBySort', async (req, res) => {
     try {
         const result = await posts.find().sort({deadline: 1}).toArray();
@@ -87,7 +86,6 @@ app.get('/volunteerPostsBySort', async (req, res) => {
 
 
 // get reviews from db
-
 app.get('/reviews', async (req, res) => {
     try {
         const result = await reviews.find().toArray();
@@ -97,9 +95,6 @@ app.get('/reviews', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-
-
 
 // add volunteer post from AddVolunteer component 
 app.post('/addVolunteerPost', async (req, res) => {
@@ -170,8 +165,6 @@ app.get('/joinRequest/:email', async (req, res) => {
 });
 
 
-
-
 //Get all post data from database related to user email for ManageMyPosts component
 app.get('/myPosts/:email', async (req, res) => {
     try {
@@ -184,7 +177,6 @@ app.get('/myPosts/:email', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 // get data for update component 
 app.get('/myPost/:id', async (req, res) => {
@@ -201,8 +193,6 @@ app.get('/myPost/:id', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-
 
 //  update post in updatePost component
 app.put('/update/:id', async (req, res) => {
@@ -247,6 +237,44 @@ app.patch('/volRequest/:id', async (req, res) => {
     };
 });
 
+// delete data 
+app.delete('/delete/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await posts.deleteOne(query);
+        res.json(result);
+    } catch (error) {
+        console.error("Error deleting job:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+
+// jwt sectiion 
+app.post('/jwt', async (req, res) => {
+    const user = req.body;
+    console.log('Dynamic token for this user is: ', user);
+    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '365d' });
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
+    }).send({ success: true });
+});
+
+
+// remove token on logout 
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('token',  {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        maxAge:0
+    }).send({ success: true });
+})
 
 
 
