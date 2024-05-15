@@ -46,6 +46,7 @@ dbConnect();
 
 const posts = client.db('assignment11').collection('volunteerPosts');
 const requests = client.db('assignment11').collection('volunteerRequests');
+const reviews = client.db('assignment11').collection('reviews');
 
 
 
@@ -72,7 +73,7 @@ app.get('/volunteerRequests', async (req, res) => {
 });
 
 
-//Get all posts data from database
+//Get all posts data from database in ascending order
 
 app.get('/volunteerPostsBySort', async (req, res) => {
     try {
@@ -83,6 +84,22 @@ app.get('/volunteerPostsBySort', async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+
+// get reviews from db
+
+app.get('/reviews', async (req, res) => {
+    try {
+        const result = await reviews.find().toArray();
+        res.json(result);
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+
 
 // add volunteer post from AddVolunteer component 
 app.post('/addVolunteerPost', async (req, res) => {
@@ -187,7 +204,7 @@ app.get('/myPost/:id', async (req, res) => {
 
 
 
-
+//  update post in updatePost component
 app.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -211,6 +228,24 @@ app.put('/update/:id', async (req, res) => {
     }
 });
 
+
+///Update request status in MyVolunteerRequest and RequestToJoin components
+app.patch('/volRequest/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const status = req.body;
+        console.log(status);
+        const query = { _id: new ObjectId(id) };
+        const updateDoc = {
+            $set: status, //explanation session2 part2 10min
+        };
+        const result = await requests.updateOne(query, updateDoc);
+        res.send(result);
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ error: "Internal server error" });
+    };
+});
 
 
 
