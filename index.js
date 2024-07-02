@@ -11,7 +11,7 @@ const app = express();
 
 
 //middleware
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json()); // 
 
 
@@ -42,6 +42,12 @@ dbConnect();
 
 
 // write your api after this line 
+
+
+
+
+
+
 
 
 
