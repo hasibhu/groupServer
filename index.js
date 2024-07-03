@@ -52,6 +52,52 @@ dbConnect();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // write your api above this 
 // basic server part 
 app.get('/', (req, res) => {
